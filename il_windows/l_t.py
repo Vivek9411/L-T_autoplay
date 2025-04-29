@@ -33,15 +33,14 @@ driver = uc.Chrome(driver_executable_path=str(chromedriver_path))
 # optional: use your real user-agent
 # options.add_argument("user-agent=YourCustomUserAgentHere")
 
-
 url = 'https://ietllearnkonnect.lntedutech.com/Home'
 driver.get(url)
 time.sleep(5)
-email = '' # add your username
-password = '' # add your password
 
-
-time.sleep(5)
+# email = ""  # add your email
+# password = '' # add your password
+# password = 'xIiYnRJ@123'
+# time.sleep(5)
 driver.find_element(By.XPATH, '/html/body/app-root/div/app-header/header/div/div[3]/div[2]/button').click()
 time.sleep(5)
 driver.find_element(By.ID, 'email').send_keys(email)
@@ -73,7 +72,8 @@ all_scroll_buttons = driver.find_elements(By.CSS_SELECTOR, '.arrowExpandCollapse
 print(len(all_scroll_buttons))
 
 
-def play_video(driver, outer_iframe_id='myPlayer', inner_iframe_id='content', video_id='video'):
+played_video = []
+def play_video(driver, title,outer_iframe_id='myPlayer', inner_iframe_id='content', video_id='video'):
     try:
         print("Trying to play video...")
 
@@ -122,9 +122,11 @@ def play_video(driver, outer_iframe_id='myPlayer', inner_iframe_id='content', vi
                     video.muted = true;
                     video.play();
                     console.log("Video is playing");
+                    
                 }}
             """)
             print("Playback started.")
+            played_video.append(title)
         else:
             print("Failed to retrieve video duration.")
 
@@ -165,6 +167,7 @@ while True:
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'ul li h3'))
             )
             print(video.find_element(By.CSS_SELECTOR, 'h3').text)
+            title = video.find_element(By.CSS_SELECTOR, 'h3').text
             if video.find_element(By.CSS_SELECTOR, 'h3').text=='Final Assessment':
                 print('Time to gooo bbyeee, task completed')
                 lets_break=True
@@ -177,11 +180,11 @@ while True:
             except Exception as e:
                 print('inner error class_atrib not found')
                 class_atrrib=None
-            if not class_atrrib or 'bgGreen' not in class_atrrib:
+            if (not class_atrrib or 'bgGreen' not in class_atrrib) and (title not in played_video):
                 try:
                     video.click()
-                    time_of_video = play_video(driver=driver)
-                    time.sleep(time_of_video+60)
+                    time_of_video = play_video(driver=driver, title=title)
+                    time.sleep(time_of_video+30)
                     if temp==0:
                         temp = 2
                         break
